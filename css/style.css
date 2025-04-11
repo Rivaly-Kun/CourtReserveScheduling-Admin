@@ -1,4 +1,155 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+/* General button styles for Edit and Delete */
+button.edit-btn, button.delete-btn, button.view-images-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 5px;
+    outline: none;
+    color: black;  /* Text color set to black */
+}
+
+/* Edit button */
+button.edit-btn {
+    background-color: #2f88ff !important; /* Blue background */
+    color: black;
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.3);
+}
+
+button.edit-btn:hover, button.edit-btn:focus {
+    background-color: #1f64a0;
+    box-shadow: 0 6px 8px rgba(0, 123, 255, 0.5);
+}
+
+button.edit-btn svg {
+    margin-right: 8px;
+}
+
+/* Delete button */
+button.delete-btn {
+    background-color: #d50000 !important; /* Red background */
+    color: black;
+    box-shadow: 0 4px 6px rgba(255, 0, 0, 0.3);
+}
+
+button.delete-btn:hover, button.delete-btn:focus {
+    background-color: #b50000;
+    box-shadow: 0 6px 8px rgba(255, 0, 0, 0.5);
+}
+
+button.delete-btn svg {
+    margin-right: 8px;
+}
+
+/* View Images button */
+button.view-images-btn {
+    background-color: #f0ad4e !important; /* Orange background */
+    color: black;
+    box-shadow: 0 4px 6px rgba(240, 173, 78, 0.3);
+}
+
+button.view-images-btn:hover, button.view-images-btn:focus {
+    background-color: #ec971f;
+    box-shadow: 0 6px 8px rgba(240, 173, 78, 0.5);
+}
+
+/* Focus ring for accessibility */
+button:focus {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
+
+/* General button styles for Accept, Reject, and Cancel */
+button.accept, button.reject, button.cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 5px;
+    outline: none;
+}
+
+/* Accept button */
+button.accept {
+    background-color: #2f88ff;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.3);
+}
+
+button.accept svg {
+    margin-right: 8px;
+}
+
+/* Hover and focus effects for accept */
+button.accept:hover, button.accept:focus {
+    background-color: #1f64a0;
+    box-shadow: 0 6px 8px rgba(0, 123, 255, 0.5);
+}
+
+/* Reject button */
+button.reject {
+    background-color: #d50000;
+    color: white;
+    box-shadow: 0 4px 6px rgba(255, 0, 0, 0.3);
+}
+
+button.reject svg {
+    margin-right: 8px;
+}
+
+/* Hover and focus effects for reject */
+button.reject:hover, button.reject:focus {
+    background-color: #b50000;
+    box-shadow: 0 6px 8px rgba(255, 0, 0, 0.5);
+}
+
+/* Cancel button */
+button.cancel {
+    background-color: #ff5722;
+    color: white;
+    box-shadow: 0 4px 6px rgba(255, 87, 34, 0.3);
+}
+
+button.cancel svg {
+    margin-right: 8px;
+}
+
+/* Hover and focus effects for cancel */
+button.cancel:hover, button.cancel:focus {
+    background-color: #e64a19;
+    box-shadow: 0 6px 8px rgba(255, 87, 34, 0.5);
+}
+
+/* Focus ring for accessibility */
+button:focus {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
+
+
+
+
+
+
+
+
+
 .AssistBoxSched {
 	width: 90%;
 	display: grid;
@@ -736,12 +887,7 @@ background: var(--light-blue);
 #content main .table-data .order table td {
 	padding: 16px 0;
 }
-#content main .table-data .order table tr td:first-child {
-	display: flex;
-	align-items: center;
-	grid-gap: 12px;
-	padding-left: 6px;
-}
+
 #content main .table-data .order table td img {
 	width: 36px;
 	height: 36px;

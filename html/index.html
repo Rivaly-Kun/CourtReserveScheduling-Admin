@@ -12,7 +12,7 @@
     <!-- My CSS -->
     <link rel="stylesheet" href="../css/style.css">
     <link rel="icon" type="image/png" href="../img/NewLogo.png">
-    <title>Admin-AllinOneSTI</title>
+    <title>Admin    - Basket Ball Reserve</title>
 
 
 </head>
@@ -27,13 +27,15 @@
         <ul class="side-menu top">
             <li class="active">
                 <a href="#" id="dashboard-link">
-                    <i class='bx bxs-home-circle' ></i>
+                    <i class='bx' >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1"/></svg>
+                    </i>
                     <span class="text">Home</span>
                 </a>
             </li>
             <li>
                 <a href="#" id="analytics-link">
-                    <i class='bx' ><svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
+                    <i class='bx' ><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path fill="currentColor" d="M16 17v2H2v-2s0-4 7-4s7 4 7 4m-3.5-9.5A3.5 3.5 0 1 0 9 11a3.5 3.5 0 0 0 3.5-3.5m3.44 5.5A5.32 5.32 0 0 1 18 17v2h4v-2s0-3.63-6.06-4M15 4a3.4 3.4 0 0 0-1.93.59a5 5 0 0 1 0 5.82A3.4 3.4 0 0 0 15 11a3.5 3.5 0 0 0 0-7" />
                     </svg></i>
                     <span class="text">Users</span>
@@ -280,82 +282,67 @@
    
        
 
-        <!-- Content for the "Admin" section -->
+        <!-- Content for the "UsersSec" section -->
         
-        <main>
+ <main>
+    <main>
         <div id="analytics-content" style="display: none;">
-           
-		   
-           
-
-                <div class="table-data">
-                    <div class="order">
-                        <div class="head">
-                            <h3>Members</h3>
-                            <!--<i class='bx bx-plus' ></i>-->
-                        </div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Username</th>
-                                    <th>Email</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                    
-                                </tr>
-                            </thead>
-                            <tbody id="UserDiv">
-                              <!--Here mga sud-->
-                             
-                            </tbody>
-                        </table>
+            <div class="table-data">
+                <div class="order">
+                    <div class="head">
+                        <h3>Users</h3>
                     </div>
-                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="UserDiv">
+                            <!-- User data will be dynamically loaded here -->
+                        </tbody>
+                    </table>
                 </div>
-           
-
+            </div>
         </div>
-        
     </main>
+    
+
         <!-- Content for the "Post" section -->
         
         <main>
-        <div id="post-content" style="display: none;">
-           
-		   <div id="viewPostContent" style="display: none;">
-
-           </div>
-           
-
+            <div id="post-content" style="display: none;">
+                <div id="viewPostContent" style="display: none;"></div>
+        
                 <div class="table-data">
                     <div class="order">
                         <div class="head">
-                            <h3>Posts</h3>
-                            <!--<i class='bx bx-plus' ></i>-->
+                            <h3>Bookings</h3>
                         </div>
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Poster</th>
+                                    <th>Full Name</th>
                                     <th>Email</th>
-                                    
+                                    <th>Phone</th>
+                                    <th>Court</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
                                     <th>Actions</th>
-                                    
                                 </tr>
                             </thead>
                             <tbody id="PostDiv">
-                              <!--Here mga sud-->
-                             
+                                <!-- Dynamic content will be inserted here -->
                             </tbody>
                         </table>
                     </div>
-                    
                 </div>
-           
-
-        </div>
+            </div>
+        </main>
         
-    </main>
 
 
 
@@ -365,46 +352,58 @@
 
 
 
-        <!-- Content for the "assistant" section -->
+        <!-- Content for the "CourtSec" section -->
         
         <main>
-        <div id="asstitant-content" style="display: none;">
+            <div id="asstitant-content" style="display: none;">
+               
+    <!-- Floating Button -->
+    <button id="addCourtBtn" style="
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
+    ">+</button>
+
            
-		   <div class="AssistBoxSched" style="display: none;">
-
-
-           </div>
-           
-
+        
                 <div class="table-data">
                     <div class="order">
                         <div class="head">
-                            <h3>Members</h3>
+                            <h3>Courts</h3>
                             <!--<i class='bx bx-plus' ></i>-->
                         </div>
                         <table>
                             <thead>
                                 <tr>
-                                    <th>assistant</th>
-                                    <th>Email</th>
-                                    <th>Total Hrs</th>
+                                    <th>Court Name</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Images</th>
                                     <th>Actions</th>
-                                    
                                 </tr>
                             </thead>
                             <tbody id="AssistantDiv">
-                              <!--Here mga sud-->
-                             
+                                <!-- Courts go here -->
                             </tbody>
                         </table>
+                        
                     </div>
-                    
                 </div>
-           
+            </div>
 
-        </div>
+
+            
+        </main>
         
-    </main>
    
 
 
@@ -412,12 +411,15 @@
     <!-- CONTENT -->
 
     <!--Scripts-->
+    <script type="module" src="../js/bookings.js"></script>
+    <script type="module" src="../js/users.js"></script>
     <script type="module" src="../js/home.js"></script>
-
-
+    <script type="module" src="../js/courts.js"></script>
     <script src="../js/script.js"></script>
     <script src="../js/functions.js"></script>
-   
+
+     <!--Import Scripts-->
+
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="https://unpkg.com/sweetalert2@10"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>

@@ -35,11 +35,11 @@ postlink.addEventListener('click', () => {
     Bread.textContent = 'Booking'; 
 });
 membersLink.addEventListener('click', () => {
-    showContent('all-members-content', 'Courts');
-    Bread.textContent = 'Courts'; 
+    showContent('all-members-content', 'Payments');
+    Bread.textContent = 'Payments'; 
 });
 asstitantlink.addEventListener('click', () => {
-    showContent('asstitant-content', 'Payments');
-    Bread.textContent = 'Payments'; 
+    showContent('asstitant-content', 'Courts');
+    Bread.textContent = 'Courts'; 
 });
 
