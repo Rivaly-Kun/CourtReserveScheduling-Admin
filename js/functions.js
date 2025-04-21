@@ -6,6 +6,7 @@ const scannerlink = document.getElementById('scanner-link');
 const asstitantlink = document.getElementById('asstitant-link');
 const postlink = document.getElementById('post-link');
 
+
 const Bread = document.getElementById('BreadcrumName');
 
 function showContent(contentId, title) {
@@ -21,6 +22,8 @@ function showContent(contentId, title) {
     document.getElementById(contentId).style.display = 'block';
 }
 
+
+
 dashboardLink.addEventListener('click', () => {
     showContent('dashboard-content', 'Home');
     Bread.textContent = 'Home'; 
@@ -35,8 +38,8 @@ postlink.addEventListener('click', () => {
     Bread.textContent = 'Booking'; 
 });
 membersLink.addEventListener('click', () => {
-    showContent('all-members-content', 'Payments');
-    Bread.textContent = 'Payments'; 
+    showContent('all-members-content', 'Logs');
+    Bread.textContent = 'Logs'; 
 });
 asstitantlink.addEventListener('click', () => {
     showContent('asstitant-content', 'Courts');

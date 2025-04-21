@@ -1,7 +1,87 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
 
+button.verify-btn {
+	background-color:green;
+	color:white;
+    box-shadow: 0 4px 6px rgba(17, 255, 0, 0.3);
+}
+.todo {
+	margin-top: 20px;
+  }
+  
+  .todo .head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 12px;
+	padding: 10px 0;
+  }
+  
+  .todo .head h3 {
+	font-size: 1.2rem;
+	font-weight: 600;
+
+  }
+  
+  .todo .head i {
+	font-size: 1.5rem;
+	color:var(--dark);
+	cursor: pointer;
+	transition: 0.3s ease;
+  }
+  
+  .todo .head i:hover {
+	color:var(--dark-grey);
+  }
+  
+  .todo table {
+	width: 100%;
+	border-collapse: collapse;
+	
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .todo table tr {
+	border-bottom: 1px solid #eee;
+  }
+  
+  .todo table tr:last-child {
+	border-bottom: none;
+  }
+  
+  .todo table td {	
+	padding: 14px 18px;
+	font-size: 0.95rem;
+	color: #555;
+  }
+  
+  .todo table td:first-child {
+	font-weight: 600;
+	color: var(--dark);
+  }
+  
+  .todo table td:nth-child(2) {
+	color: var(--dark);
+  }
+  
+  @media screen and (max-width: 768px) {
+	.todo table td {
+	  padding: 12px 10px;
+	  font-size: 0.9rem;
+	}
+  
+	.todo .head h3 {
+	  font-size: 1rem;
+	}
+  }
+  
+
+
+
 /* General button styles for Edit and Delete */
-button.edit-btn, button.delete-btn, button.view-images-btn {
+button.edit-btn, button.delete-btn, button.view-images-btn,button.verify-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -814,20 +894,24 @@ body {
 	justify-content: center;
 	align-items: center;
 }
+/* 1. Available Courts - Green */
 #content main .box-info li:nth-child(1) .bx {
-	background: #FFCCCB;
-	color: #ff0000;
+	background: #90EE90; /* Light green */
+	color: #008000;       /* Dark green */
+}
 
-}
+/* 2. Unavailable Courts - Red */
 #content main .box-info li:nth-child(2) .bx {
-	
-background: var(--light-blue);
-	color: var(--blue);
+	background: #FFCCCB; /* Light red */
+	color: #ff0000;       /* Bright red */
 }
+
+/* 3. Pending Requests - Blue */
 #content main .box-info li:nth-child(3) .bx {
-	background: #90EE90;
-	color: #008000;
+	background: var(--light-blue); /* Custom light blue */
+	color: var(--blue);            /* Custom blue */
 }
+
 #content main .box-info li .text h3 {
 	font-size: 24px;
 	font-weight: 600;
