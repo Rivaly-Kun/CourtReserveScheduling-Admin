@@ -1,10 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
 
-button.verify-btn {
+button.verify-btn{
 	background-color:green;
 	color:white;
     box-shadow: 0 4px 6px rgba(17, 255, 0, 0.3);
 }
+button.Images-btn{
+	background-color:#f0ad4e !important;
+	color:white;
+    box-shadow: 0 4px 6px #fdcf8e !important;
+}
+
+
 .todo {
 	margin-top: 20px;
   }
@@ -81,7 +88,7 @@ button.verify-btn {
 
 
 /* General button styles for Edit and Delete */
-button.edit-btn, button.delete-btn, button.view-images-btn,button.verify-btn {
+button.edit-btn, button.delete-btn, button.view-images-btn,button.verify-btn,button.Images-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;

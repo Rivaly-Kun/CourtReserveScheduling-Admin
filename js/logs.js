@@ -17,7 +17,7 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 // Reference to all users in the database
-const usersRef = ref(database, 'users');
+const usersRef = ref(database, 'HistoryDiv');
 
 // Fetch all users and display them
 onValue(usersRef, (snapshot) => {
@@ -136,7 +136,7 @@ No users
 
 
 
-const verify = ref(database, 'verify');
+const verify = ref(database, 'PaymentsDiv');
 
 onValue(verify, (snapshot) => {
     const userDiv = document.getElementById('UnverifiedUsers');
