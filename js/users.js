@@ -38,7 +38,7 @@ onValue(usersRef, (snapshot) => {
                 <td>${fullName}</td>
                 <td>${email}</td>
                 <td>${phone}</td>
-                    <td>${phone}</td>
+                    <td>${status}</td>
                 <td>
                     <button class="edit-btn" data-id="${userId}" style="cursor:pointer;">
                   <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="currentColor" d="M20.849 8.713a3.932 3.932 0 0 0-5.562-5.561l-.887.887l.038.111a8.75 8.75 0 0 0 2.093 3.32a8.75 8.75 0 0 0 3.43 2.13z" opacity="0.5"/><path fill="currentColor" d="m14.439 4l-.039.038l.038.112a8.75 8.75 0 0 0 2.093 3.32a8.75 8.75 0 0 0 3.43 2.13l-8.56 8.56c-.578.577-.867.866-1.185 1.114a6.6 6.6 0 0 1-1.211.748c-.364.174-.751.303-1.526.561l-4.083 1.361a1.06 1.06 0 0 1-1.342-1.341l1.362-4.084c.258-.774.387-1.161.56-1.525q.309-.646.749-1.212c.248-.318.537-.606 1.114-1.183z"/></svg>
@@ -253,26 +253,56 @@ onValue(verify, (snapshot) => {
         });
     });
 
-    // Verify Button
-    document.querySelectorAll('.verify-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            const userId = e.currentTarget.getAttribute('data-id');
-            const confirm = await Swal.fire({
-                title: 'Verify User?',
-                text: "Do you want to mark this user as verified?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, verify!'
-            });
 
-            if (confirm.isConfirmed) {
-                const userRef = ref(database, `users/${userId}`);
-                await update(userRef, { status: 'verified' });
-                Swal.fire('Verified!', 'User has been marked as verified.', 'success');
-                location.reload();
-            }
+
+
+
+
+// Verify Button
+document.querySelectorAll('.verify-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+        const userId = e.currentTarget.getAttribute('data-id');
+        const button = e.currentTarget;
+
+        const confirm = await Swal.fire({
+            title: 'Verify User?',
+            text: "Do you want to mark this user as verified?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, verify!'
         });
+
+        if (confirm.isConfirmed) {
+            try {
+                const userRef = ref(database, `users/${userId}`);
+                const verifyRef = ref(database, `verify/${userId}`);
+
+                console.log(userId);
+
+                // 1. Always just update the user's status to "verified"
+                await update(userRef, { status: 'verified' });
+
+                // 2. Always remove from verify
+                await remove(verifyRef);
+
+                // 3. Remove the table row
+                button.closest('tr').remove();
+
+                // 4. Success
+                await Swal.fire('Verified!', 'User has been verified and removed from verify list.', 'success');
+            } catch (error) {
+                console.error("Error verifying user:", error);
+                Swal.fire('Error!', 'Something went wrong during verification.', 'error');
+            }
+        }
     });
+});
+
+
+
+
+
+
 });
