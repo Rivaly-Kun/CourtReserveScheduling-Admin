@@ -1,5 +1,6 @@
+// Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getDatabase, ref,onValue, get,update, set, remove } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { getDatabase, ref, onValue, remove, update, set,get  } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -13,266 +14,197 @@ const firebaseConfig = {
     measurementId: "G-3X5LDP2C5N"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// Reference to all users in the database
-const usersRef = ref(database, 'HistoryDiv');
+// Load history
+function loadHistory() {
+    const historyRef = ref(database, 'history');
+    const historyTbody = document.getElementById('HistoryDiv');
 
-// Fetch all users and display them
-onValue(usersRef, (snapshot) => {
-    if (snapshot.exists()) {
-        const usersData = snapshot.val();
-        const userDiv = document.getElementById('VerifiedUsers');
-        userDiv.innerHTML = '';  // Clear existing content
+    onValue(historyRef, (snapshot) => {
+        historyTbody.innerHTML = '';
 
-        // Loop through each user and display their data
-        for (let userId in usersData) {
-            const user = usersData[userId];
-            const { email, fullName, phone, status } = user;
-            if (status && status.toLowerCase() === 'verified') {
-
-            // Create a new table row for each user
+        if (!snapshot.exists()) {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${fullName}</td>
-                <td>${email}</td>
-                <td>${phone}</td>
-                    <td>${phone}</td>
-                <td>
-                    <button class="edit-btn" data-id="${userId}" style="cursor:pointer;">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="currentColor" d="M20.849 8.713a3.932 3.932 0 0 0-5.562-5.561l-.887.887l.038.111a8.75 8.75 0 0 0 2.093 3.32a8.75 8.75 0 0 0 3.43 2.13z" opacity="0.5"/><path fill="currentColor" d="m14.439 4l-.039.038l.038.112a8.75 8.75 0 0 0 2.093 3.32a8.75 8.75 0 0 0 3.43 2.13l-8.56 8.56c-.578.577-.867.866-1.185 1.114a6.6 6.6 0 0 1-1.211.748c-.364.174-.751.303-1.526.561l-4.083 1.361a1.06 1.06 0 0 1-1.342-1.341l1.362-4.084c.258-.774.387-1.161.56-1.525q.309-.646.749-1.212c.248-.318.537-.606 1.114-1.183z"/></svg>
-                     Edit</button>
-                    <button class="delete-btn" data-id="${userId}" style="cursor:pointer;"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="currentColor" d="M9.25 3a.75.75 0 0 1 .75-.75h4a.75.75 0 0 1 .75.75v.75H19a.75.75 0 0 1 0 1.5H5a.75.75 0 0 1 0-1.5h4.25z"/><path fill="currentColor" fill-rule="evenodd" d="M6.24 7.945a.5.5 0 0 1 .497-.445h10.526a.5.5 0 0 1 .497.445l.2 1.801a44.2 44.2 0 0 1 0 9.771l-.02.177a2.6 2.6 0 0 1-2.226 2.29a26.8 26.8 0 0 1-7.428 0a2.6 2.6 0 0 1-2.227-2.29l-.02-.177a44.2 44.2 0 0 1 0-9.77zm4.51 3.455a.75.75 0 0 0-1.5 0v7a.75.75 0 0 0 1.5 0zm4 0a.75.75 0 0 0-1.5 0v7a.75.75 0 0 0 1.5 0z" clip-rule="evenodd"/></svg> Delete</button>
+                <td colspan="4" style="text-align:center; font-style:italic;">
+                    No history found
                 </td>
             `;
-            userDiv.appendChild(row);
+            historyTbody.appendChild(row);
+            return;
         }
-      
-    }
 
-        // Add event listeners for Edit and Delete buttons
-        document.querySelectorAll('.edit-btn').forEach(btn => {
+        const historyData = snapshot.val();
+
+        for (let historyId in historyData) {
+            const history = historyData[historyId];
+            const { reporter, reported, date } = history;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${reporter || 'Unknown'}</td>
+                <td>${reported || 'Unknown'}</td>
+                <td>${new Date(date).toLocaleString()}</td>
+                <td>
+                    <button class="delete-history-btn" data-id="${historyId}" style="cursor:pointer;">Delete</button>
+                </td>
+            `;
+            historyTbody.appendChild(row);
+        }
+
+        document.querySelectorAll('.delete-history-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
-                const userId = e.currentTarget.getAttribute('data-id');
-                const userRef = ref(database, `users/${userId}`);
-                const userSnapshot = await get(userRef);
+                const historyId = e.currentTarget.getAttribute('data-id');
 
-                if (userSnapshot.exists()) {
-                    const userData = userSnapshot.val();
-                    const { email, fullName, phone } = userData;
-
-                    // Open a SweetAlert to edit user data
-                    const { value: formValues } = await Swal.fire({
-                        title: 'Edit User',
-                        html: `
-                            <input id="editFullName" class="swal2-input" value="${fullName}" placeholder="Full Name">
-                            <input id="editEmail" class="swal2-input" value="${email}" placeholder="Email">
-                            <input id="editPhone" class="swal2-input" value="${phone}" placeholder="Phone">
-                        `,
-                        focusConfirm: false,
-                        preConfirm: () => {
-                            const fullName = document.getElementById('editFullName').value;
-                            const email = document.getElementById('editEmail').value;
-                            const phone = document.getElementById('editPhone').value;
-
-                            if (!fullName || !email || !phone) {
-                                Swal.showValidationMessage("Please fill in all fields.");
-                                return false;
-                            }
-
-                            // Update the user's data in Firebase
-                            set(userRef, { fullName, email, phone });
-                        }
-                    });
-
-                    if (formValues) {
-                        Swal.fire('Success', 'User details updated!', 'success');
-                        // Reload user data after edit
-                        location.reload();
-                    }
-                }
-            });
-        });
-
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const userId = e.currentTarget.getAttribute('data-id');
                 const confirm = await Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This will permanently delete the user.",
+                    title: 'Delete History?',
+                    text: 'Are you sure you want to delete this history record?',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
+                    confirmButtonText: 'Yes, delete it!',
                 });
 
                 if (confirm.isConfirmed) {
-                    // Delete the user from Firebase
-                    await remove(ref(database, `users/${userId}`));
-                    Swal.fire('Deleted!', 'User has been removed.', 'success');
-                    // Reload user data after delete
-                    location.reload();
+                    await remove(ref(database, `history/${historyId}`));
+                    Swal.fire('Deleted!', 'History record deleted.', 'success');
                 }
             });
         });
-    } else {
-        console.log("No user data found");
-        const userDiv = document.getElementById('VerifiedUsers');
-        userDiv.innerHTML = '';  // Clear existing content
-        console.log("No user data found");
-        const row = document.createElement('tr');
-        row.innerHTML = `
-         <td colspan="4" style="text-align: center; font-style: italic; width: 100%;">
-No users
-</td>
+    });
+}
 
-        `;
-        userDiv.appendChild(row);
-    }
-});
+// Load payments
+function loadPayments() {
+    const paymentsRef = ref(database, 'payments');
+    const paymentsTbody = document.getElementById('PaymentsDiv');
 
+    onValue(paymentsRef, (snapshot) => {
+        paymentsTbody.innerHTML = '';
 
+        if (!snapshot.exists()) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td colspan="4" style="text-align:center; font-style:italic;">
+                    No payments found
+                </td>
+            `;
+            paymentsTbody.appendChild(row);
+            return;
+        }
 
+        const paymentsData = snapshot.val();
 
-const verify = ref(database, 'PaymentsDiv');
-
-onValue(verify, (snapshot) => {
-    const userDiv = document.getElementById('UnverifiedUsers');
-    userDiv.innerHTML = ''; // Clear existing content
-
-    if (!snapshot.exists()) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td colspan="5" style="text-align: center; font-style: italic; width: 100%;">
-                No users
-            </td>
-        `;
-        userDiv.appendChild(row);
-        console.log("No user data found");
-        return;
-    }
-
-    const usersData = snapshot.val();
-    let hasUnverifiedUsers = false;
-
-    for (let userId in usersData) {
-        const user = usersData[userId];
-        const { fullName, email, phone, status, idImage } = user;
-
-        if (!status || status.toLowerCase() === 'unverified') {
-            hasUnverifiedUsers = true;
+        for (let paymentId in paymentsData) {
+            const payment = paymentsData[paymentId];
+            const { userName, date, paymentStatus } = payment;
 
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${fullName}</td>
-                <td>${email}</td>
-                <td>${phone}</td>
-                <td>${status ? status : 'Unverified'}</td>
+                <td>${userName || 'Unknown'}</td>
+                <td>${new Date(date).toLocaleString()}</td>
+                <td>${paymentStatus || 'Unknown'}</td>
                 <td>
-                    <button class="edit-btn" data-id="${userId}" style="cursor:pointer;">Edit</button>
-                    <button class="delete-btn" data-id="${userId}" style="cursor:pointer;">Delete</button>
-                    <button class="verify-btn" data-id="${userId}" style="cursor:pointer;">Verify</button>
-                    <button class="Images-btn" data-id="${userId}" data-image="${idImage}" style="cursor:pointer;">View Images</button>
+                    <button class="pay-now-btn" data-id="${paymentId}" style="cursor:pointer;">Pay Now</button>
+                    <button class="delete-payment-btn" data-id="${paymentId}" style="cursor:pointer;">Delete</button>
                 </td>
             `;
-            userDiv.appendChild(row);
+            paymentsTbody.appendChild(row);
         }
-    }
 
-    if (!hasUnverifiedUsers) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td colspan="5" style="text-align: center; font-style: italic; width: 100%;">
-                No users
-            </td>
-        `;
-        userDiv.appendChild(row);
-    }
+        document.querySelectorAll('.pay-now-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const paymentId = e.currentTarget.getAttribute('data-id');
+                const paymentRef = ref(database, `payments/${paymentId}`);
 
-    // View Image Button
-    document.querySelectorAll('.Images-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            const imageUrl = e.currentTarget.getAttribute('data-image');
-
-            if (!imageUrl) {
-                return Swal.fire('No Image', 'No image available for this user.', 'info');
-            }
-
-            const imageHTML = `
-                <img src="${imageUrl}" style="max-width:100%; margin:5px; border-radius:10px;">
-            `;
-
-            await Swal.fire({
-                title: 'User ID Image',
-                html: `<div style="display:flex; flex-wrap:wrap; justify-content:center;">${imageHTML}</div>`,
-                width: '800px'
-            });
-        });
-    });
-
-    // Edit Button
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            const userId = e.currentTarget.getAttribute('data-id');
-            const userRef = ref(database, `users/${userId}`);
-            const userSnapshot = await get(userRef);
-
-            if (userSnapshot.exists()) {
-                const userData = userSnapshot.val();
-                const { email, fullName, phone } = userData;
-
-                const { value: formValues } = await Swal.fire({
-                    title: 'Edit User',
-                    html: `
-                        <input id="editFullName" class="swal2-input" value="${fullName}" placeholder="Full Name">
-                        <input id="editEmail" class="swal2-input" value="${email}" placeholder="Email">
-                        <input id="editPhone" class="swal2-input" value="${phone}" placeholder="Phone">
-                    `,
-                    focusConfirm: false,
-                    preConfirm: () => {
-                        const fullName = document.getElementById('editFullName').value;
-                        const email = document.getElementById('editEmail').value;
-                        const phone = document.getElementById('editPhone').value;
-
-                        if (!fullName || !email || !phone) {
-                            Swal.showValidationMessage("Please fill in all fields.");
-                            return false;
-                        }
-
-                        set(userRef, { fullName, email, phone });
-                    }
+                const confirm = await Swal.fire({
+                    title: 'Mark as Paid?',
+                    text: 'Do you want to mark this payment as paid?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, mark as paid!',
                 });
 
-                if (formValues) {
-                    Swal.fire('Success', 'User details updated!', 'success');
-                    location.reload();
+                if (confirm.isConfirmed) {
+                    await update(paymentRef, { paymentStatus: 'paid' });
+                    Swal.fire('Success!', 'Payment status updated to Paid.', 'success');
                 }
-            }
-        });
-    });
-
-    // Verify Button
-    document.querySelectorAll('.verify-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            const userId = e.currentTarget.getAttribute('data-id');
-            const confirm = await Swal.fire({
-                title: 'Verify User?',
-                text: "Do you want to mark this user as verified?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, verify!'
             });
+        });
 
-            if (confirm.isConfirmed) {
-                const userRef = ref(database, `users/${userId}`);
-                await update(userRef, { status: 'verified' });
-                Swal.fire('Verified!', 'User has been marked as verified.', 'success');
-                location.reload();
-            }
+        document.querySelectorAll('.delete-payment-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const paymentId = e.currentTarget.getAttribute('data-id');
+
+                const confirm = await Swal.fire({
+                    title: 'Delete Payment?',
+                    text: 'Are you sure you want to delete this payment record?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                });
+
+                if (confirm.isConfirmed) {
+                    await remove(ref(database, `payments/${paymentId}`));
+                    Swal.fire('Deleted!', 'Payment record deleted.', 'success');
+                }
+            });
         });
     });
+}
+
+
+// Monitor and move finished reservations
+function monitorReservations() {
+    setInterval(() => {
+        const reservationsRef = ref(database, "reservations");
+
+        console.log("No reservations found.");
+
+        get(reservationsRef).then((snapshot) => {
+            const reservations = snapshot.val();
+            const now = Date.now();
+            console.log("Current timestamp:", now);
+
+            if (reservations) {
+                Object.entries(reservations).forEach(([resId, resData]) => {
+                    console.log(`Checking reservation ${resId}:`, resData);
+                    console.log(`Now: ${now}, EndTime: ${resData.endTime}, Expired: ${now > resData.endTime}`);
+
+                    if (now > resData.endTime) {
+                        const courtId = resData.courtId;
+                        const courtRef = ref(database, `courts/${courtId}`);
+                        const historyRef = ref(database, `history/${resId}`);
+                        const paymentRef = ref(database, `payments/${resId}`);
+                        const reservationRef = ref(database, `reservations/${resId}`);
+
+                        update(courtRef, { status: "Available" }).then(() => {
+                            set(historyRef, resData).then(() => {
+                                set(paymentRef, {
+                                    ...resData,
+                                    paymentStatus: "not yet paid"
+                                }).then(() => {
+                                    remove(reservationRef);
+                                    console.log(`✅ Reservation ${resId} expired and moved to history.`);
+                                }).catch(err => console.error("Error saving payment info:", err));
+                            }).catch(err => console.error("Error saving history:", err));
+                        }).catch(err => console.error("Error updating court status:", err));
+                    }
+                });
+            } else {
+                console.log("No reservations found.");
+            }
+        }).catch(error => {
+            console.error("Error checking reservations:", error);
+        });
+    }, 5 * 1000); // every 60 seconds
+}
+
+
+window.addEventListener('DOMContentLoaded', () => {
+    loadHistory();
+    loadPayments();
+    monitorReservations();
 });
