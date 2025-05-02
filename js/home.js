@@ -72,7 +72,7 @@ onValue(reservationsRef, (snapshot) => {
         tr.innerHTML = `
           <td>${username}</td>
           <td>${email}</td>
-          <td>${res.status || "Pending"}</td>
+        
           <td><button data-id="${resId}" class="view-images-btn">View</button></td>
         `;
         productsDiv.appendChild(tr);

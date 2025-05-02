@@ -159,7 +159,7 @@
                                 <tr>
                                     <th>Username</th>
                                     <th>Email</th>
-                                    <th>Status</th>
+                                  
                                     <th>Actions</th>
                                    
                                 </tr>
@@ -200,58 +200,47 @@
     <div id="viewPostReported" style="display: none;">
 
     </div>
-<div class="table-data">
-    <div class="order">
-        <div class="head">
-            <h3>History</h3>
-            <!--<i class='bx bx-plus' ></i>-->
+    <div class="table-data">
+        <div class="order">
+            <div class="head">
+                <h3>History</h3>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Court Name</th>
+                        <th>Start Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="HistoryDiv">
+                    <!-- Filled by JS -->
+                </tbody>
+            </table>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Reporter</th>
-                    <th>Reported</th>
-                 
-                    <th>Date</th>
-                    
-                 
-                    <th>Action</th>
-                    
-                </tr>
-            </thead>
-            <tbody id="HistoryDiv">
-              <!--Here mga sud-->
-             
-            </tbody>
-        </table>
     </div>
-    
-</div>
-
-<div class="table-data">
-    <div class="order">
-        <div class="head">
-            <h3>Payments</h3>
-            <!--<i class='bx bx-plus' ></i>-->
+    <div class="table-data">
+        <div class="order">
+            <div class="head">
+                <h3>Payments</h3>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Start Time</th>
+                        <th>Payment Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="PaymentsDiv">
+                    <!-- Filled by JS -->
+                </tbody>
+            </table>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Date</th>
-                    
-                    <th>Resume</th>
-                    <th>Action</th>
-                    
-                </tr>
-            </thead>
-            <tbody id="PaymentsDiv">
-              <!--Here mga sud-->
-             
-            </tbody>
-        </table>
     </div>
-    
+        
 </div>
 </div>
         </main>
@@ -386,6 +375,7 @@
                                     <th>Court Name</th>
                                     <th>Location</th>
                                     <th>Status</th>
+                                    <th>Rate</th>
                                     <th>Images</th>
                                     <th>Actions</th>
                                 </tr>

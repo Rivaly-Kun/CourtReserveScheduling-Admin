@@ -18,7 +18,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// Load history
 function loadHistory() {
     const historyRef = ref(database, 'history');
     const historyTbody = document.getElementById('HistoryDiv');
@@ -27,13 +26,13 @@ function loadHistory() {
         historyTbody.innerHTML = '';
 
         if (!snapshot.exists()) {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td colspan="4" style="text-align:center; font-style:italic;">
-                    No history found
-                </td>
+            historyTbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align:center; font-style:italic;">
+                        No history found
+                    </td>
+                </tr>
             `;
-            historyTbody.appendChild(row);
             return;
         }
 
@@ -41,13 +40,13 @@ function loadHistory() {
 
         for (let historyId in historyData) {
             const history = historyData[historyId];
-            const { reporter, reported, date } = history;
+            const { courtName, startTimeReadable, userId } = history;
 
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${reporter || 'Unknown'}</td>
-                <td>${reported || 'Unknown'}</td>
-                <td>${new Date(date).toLocaleString()}</td>
+                <td>${userId || 'Unknown'}</td>
+                <td>${courtName || 'Unknown'}</td>
+                <td>${startTimeReadable || 'Unknown'}</td>
                 <td>
                     <button class="delete-history-btn" data-id="${historyId}" style="cursor:pointer;">Delete</button>
                 </td>
@@ -76,7 +75,8 @@ function loadHistory() {
     });
 }
 
-// Load payments
+
+
 function loadPayments() {
     const paymentsRef = ref(database, 'payments');
     const paymentsTbody = document.getElementById('PaymentsDiv');
@@ -85,13 +85,13 @@ function loadPayments() {
         paymentsTbody.innerHTML = '';
 
         if (!snapshot.exists()) {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td colspan="4" style="text-align:center; font-style:italic;">
-                    No payments found
-                </td>
+            paymentsTbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align:center; font-style:italic;">
+                        No payments found
+                    </td>
+                </tr>
             `;
-            paymentsTbody.appendChild(row);
             return;
         }
 
@@ -99,12 +99,12 @@ function loadPayments() {
 
         for (let paymentId in paymentsData) {
             const payment = paymentsData[paymentId];
-            const { userName, date, paymentStatus } = payment;
+            const { userId, startTimeReadable, paymentStatus } = payment;
 
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${userName || 'Unknown'}</td>
-                <td>${new Date(date).toLocaleString()}</td>
+                <td>${userId || 'Unknown'}</td>
+                <td>${startTimeReadable || 'Unknown'}</td>
                 <td>${paymentStatus || 'Unknown'}</td>
                 <td>
                     <button class="pay-now-btn" data-id="${paymentId}" style="cursor:pointer;">Pay Now</button>
@@ -173,7 +173,7 @@ function monitorReservations() {
                     console.log(`Checking reservation ${resId}:`, resData);
                     console.log(`Now: ${now}, EndTime: ${resData.endTime}, Expired: ${now > resData.endTime}`);
 
-                    if (now > resData.endTime) {
+                    if (now => resData.endTime) {
                         const courtId = resData.courtId;
                         const courtRef = ref(database, `courts/${courtId}`);
                         const historyRef = ref(database, `history/${resId}`);

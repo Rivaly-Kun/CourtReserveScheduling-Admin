@@ -19,12 +19,14 @@ const database = getDatabase(app);
 const storage = getStorage(app);
 
 // Add court
+// Add court
 document.getElementById('addCourtBtn').addEventListener('click', async () => {
     const { value: formValues } = await Swal.fire({
         title: 'Add Court',
         html: `
             <input id="courtName" class="swal2-input" placeholder="Court Name">
             <input id="location" class="swal2-input" placeholder="Location">
+            <input id="rate" type="number" min="0" class="swal2-input" placeholder="Rate in ₱ (Pesos)">
             <select id="status" class="swal2-input">
                 <option value="Available">Available</option>
                 <option value="Maintenance">Maintenance</option>
@@ -38,14 +40,14 @@ document.getElementById('addCourtBtn').addEventListener('click', async () => {
             const name = document.getElementById('courtName').value;
             const location = document.getElementById('location').value;
             const status = document.getElementById('status').value;
+            const rate = document.getElementById('rate').value;
             const files = document.getElementById('courtImages').files;
 
-            if (!name || !location || !status || files.length !== 3) {
-                Swal.showValidationMessage("Please fill all fields and upload exactly 3 images.");
+            if (!name || !location || !status || !rate || files.length !== 3) {
+                Swal.showValidationMessage("Please fill all fields, set a rate, and upload exactly 3 images.");
                 return false;
             }
 
-            // Upload images
             const imageURLs = [];
             for (let i = 0; i < 3; i++) {
                 const file = files[i];
@@ -55,7 +57,7 @@ document.getElementById('addCourtBtn').addEventListener('click', async () => {
                 imageURLs.push(downloadURL);
             }
 
-            return { name, location, status, images: imageURLs };
+            return { name, location, status, rate, images: imageURLs };
         }
     });
 
@@ -65,57 +67,51 @@ document.getElementById('addCourtBtn').addEventListener('click', async () => {
             courtName: formValues.name,
             location: formValues.location,
             status: formValues.status,
+            rate: parseFloat(formValues.rate),
             images: formValues.images
         });
-        Swal.fire('Success', 'Court added with images!', 'success');
+        Swal.fire('Success', 'Court added with images and rate!', 'success');
     }
 });
 
-// Load courts
 // Load courts
 function loadCourts() {
     const courtsRef = ref(database, 'courts');
     const tableBody = document.getElementById('AssistantDiv');
 
     onValue(courtsRef, (snapshot) => {
-        tableBody.innerHTML = ''; // Clear current rows
+        tableBody.innerHTML = '';
 
         snapshot.forEach((childSnapshot) => {
             const court = childSnapshot.val();
             const courtId = childSnapshot.key;
 
             const row = document.createElement('tr');
-            
-            const imageBtn = ` 
-           <button class="view-images-btn" data-images='${JSON.stringify(court.images || [])}'>
-    View Images
-</button>
-
+            const imageBtn = `
+                <button class="view-images-btn" data-images='${JSON.stringify(court.images || [])}'>
+                    View Images
+                </button>
             `;
 
             row.innerHTML = `
                 <td>${court.courtName}</td>
                 <td>${court.location}</td>
                 <td>${court.status}</td>
+                <td>₱${court.rate ? parseFloat(court.rate).toFixed(2) : '0.00'}</td>
                 <td>${imageBtn}</td>
                 <td>
-
                    <button class="edit-btn" data-id="${courtId}" style="cursor:pointer;">
-                   <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="currentColor" d="M20.849 8.713a3.932 3.932 0 0 0-5.562-5.561l-.887.887l.038.111a8.75 8.75 0 0 0 2.093 3.32a8.75 8.75 0 0 0 3.43 2.13z" opacity="0.5"/>\
-                   <path fill="currentColor" d="m14.439 4l-.039.038l.038.112a8.75 8.75 0 0 0 2.093 3.32a8.75 8.75 0 0 0 3.43 2.13l-8.56 8.56c-.578.577-.867.866-1.185 1.114a6.6 6.6 0 0 1-1.211.748c-.364.174-.751.303-1.526.561l-4.083 1.361a1.06 1.06 0 0 1-1.342-1.341l1.362-4.084c.258-.774.387-1.161.56-1.525q.309-.646.749-1.212c.248-.318.537-.606 1.114-1.183z"/>
-                   </svg>
-
-                     Edit</button>
-<button class="delete-btn" data-id="${courtId}" style="background:none;border:none;cursor:pointer;">
-<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="currentColor" d="M9.25 3a.75.75 0 0 1 .75-.75h4a.75.75 0 0 1 .75.75v.75H19a.75.75 0 0 1 0 1.5H5a.75.75 0 0 1 0-1.5h4.25z"/><path fill="currentColor" fill-rule="evenodd" d="M6.24 7.945a.5.5 0 0 1 .497-.445h10.526a.5.5 0 0 1 .497.445l.2 1.801a44.2 44.2 0 0 1 0 9.771l-.02.177a2.6 2.6 0 0 1-2.226 2.29a26.8 26.8 0 0 1-7.428 0a2.6 2.6 0 0 1-2.227-2.29l-.02-.177a44.2 44.2 0 0 1 0-9.77zm4.51 3.455a.75.75 0 0 0-1.5 0v7a.75.75 0 0 0 1.5 0zm4 0a.75.75 0 0 0-1.5 0v7a.75.75 0 0 0 1.5 0z" clip-rule="evenodd"/>
-</svg> Delete</button>
-
+                       ✏️ Edit
+                   </button>
+                   <button class="delete-btn" data-id="${courtId}" style="background:none;border:none;cursor:pointer;">
+                       🗑️ Delete
+                   </button>
                 </td>
             `;
             tableBody.appendChild(row);
         });
 
-        // 🔥 Add event listener for View Images button
+        // View images handler
         document.querySelectorAll('.view-images-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const images = JSON.parse(e.currentTarget.getAttribute('data-images'));
@@ -129,62 +125,61 @@ function loadCourts() {
             });
         });
 
-// Edit court functionality
-document.querySelectorAll('.edit-btn').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-        const courtId = e.currentTarget.getAttribute('data-id');
+        // Edit court
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const courtId = e.currentTarget.getAttribute('data-id');
+                const courtRef = ref(database, 'courts/' + courtId);
 
-        // Fetch the current court details from the database
-        const courtRef = ref(database, 'courts/' + courtId);
-        onValue(courtRef, async (snapshot) => {
-            const court = snapshot.val();
+                onValue(courtRef, async (snapshot) => {
+                    const court = snapshot.val();
 
-            if (court) {
-                // Open Swal modal with pre-filled data
-                const { value: formValues } = await Swal.fire({
-                    title: 'Edit Court Details',
-                    html: `
-                        <input id="courtName" class="swal2-input" value="${court.courtName}" placeholder="Court Name">
-                        <input id="location" class="swal2-input" value="${court.location}" placeholder="Location">
-                        <select id="status" class="swal2-input">
-                            <option value="Available" ${court.status === 'Available' ? 'selected' : ''}>Available</option>
-                            <option value="Maintenance" ${court.status === 'Maintenance' ? 'selected' : ''}>Maintenance</option>
-                            <option value="In Use" ${court.status === 'In Use' ? 'selected' : ''}>In Use</option>
-                        </select>
-                    `,
-                    focusConfirm: false,
-                    preConfirm: async () => {
-                        const name = document.getElementById('courtName').value;
-                        const location = document.getElementById('location').value;
-                        const status = document.getElementById('status').value;
+                    if (court) {
+                        const { value: formValues } = await Swal.fire({
+                            title: 'Edit Court Details',
+                            html: `
+                                <input id="courtName" class="swal2-input" value="${court.courtName}" placeholder="Court Name">
+                                <input id="location" class="swal2-input" value="${court.location}" placeholder="Location">
+                                <input id="rate" type="number" class="swal2-input" value="${court.rate || 50}" placeholder="Rate in ₱">
+                                <select id="status" class="swal2-input">
+                                    <option value="Available" ${court.status === 'Available' ? 'selected' : ''}>Available</option>
+                                    <option value="Maintenance" ${court.status === 'Maintenance' ? 'selected' : ''}>Maintenance</option>
+                                    <option value="In Use" ${court.status === 'In Use' ? 'selected' : ''}>In Use</option>
+                                </select>
+                            `,
+                            focusConfirm: false,
+                            preConfirm: async () => {
+                                const name = document.getElementById('courtName').value;
+                                const location = document.getElementById('location').value;
+                                const status = document.getElementById('status').value;
+                                const rate = document.getElementById('rate').value;
 
-                        if (!name || !location || !status) {
-                            Swal.showValidationMessage("Please fill all fields.");
-                            return false;
+                                if (!name || !location || !status || rate === '') {
+                                    Swal.showValidationMessage("Please fill all fields.");
+                                    return false;
+                                }
+
+                                return { name, location, status, rate };
+                            }
+                        });
+
+                        if (formValues) {
+                            await set(ref(database, 'courts/' + courtId), {
+                                courtName: formValues.name,
+                                location: formValues.location,
+                                status: formValues.status,
+                                rate: parseFloat(formValues.rate),
+                                images: court.images
+                            });
+
+                            Swal.fire('Updated!', 'Court details have been updated.', 'success');
                         }
-
-                        return { name, location, status };
                     }
-                });
-
-                if (formValues) {
-                    // Update court details in the database
-                    await set(ref(database, 'courts/' + courtId), {
-                        courtName: formValues.name,
-                        location: formValues.location,
-                        status: formValues.status,
-                        images: court.images // Keep the images as they are
-                    });
-
-                    Swal.fire('Updated!', 'Court details have been updated.', 'success');
-                }
-            }
+                }, { onlyOnce: true });
+            });
         });
-    });
-});
 
-
-        // 🗑️ Delete court
+        // Delete court
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const id = e.currentTarget.getAttribute('data-id');
@@ -201,16 +196,6 @@ document.querySelectorAll('.edit-btn').forEach(btn => {
                     await set(ref(database, 'courts/' + id), null);
                     Swal.fire('Deleted!', 'Court has been removed.', 'success');
                 }
-            });
-        });
-
-        // ✏️ Edit court functionality (add event listener)
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const courtId = e.currentTarget.getAttribute('data-id');
-                // Handle edit functionality here, e.g., show a Swal modal with existing data
-                console.log('Edit court with ID:', courtId);
-                // You can create a modal for editing the court's details
             });
         });
     });
