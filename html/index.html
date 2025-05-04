@@ -194,12 +194,8 @@
  <!--History-->
  <div id="all-members-content" style="display: none;">
 
-    
+    <button id="exportExcelButton">Export to Excel</button>
 
-
-    <div id="viewPostReported" style="display: none;">
-
-    </div>
     <div class="table-data">
         <div class="order">
             <div class="head">
@@ -208,9 +204,11 @@
             <table>
                 <thead>
                     <tr>
-                        <th>User ID</th>
+                        <th>User</th>
                         <th>Court Name</th>
                         <th>Start Time</th>
+                        <th>End Time</th>
+                       
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -228,8 +226,8 @@
             <table>
                 <thead>
                     <tr>
-                        <th>User ID</th>
-                        <th>Start Time</th>
+                        <th>User</th>
+                        <th>Payment</th>
                         <th>Payment Status</th>
                         <th>Action</th>
                     </tr>
@@ -397,10 +395,10 @@
 
 
     </section>
-    <!-- CONTENT -->
-
-    <!--Scripts-->
+   
+    <!--Scripts-->    
     <script type="module" src="../js/bookings.js"></script>
+    <script type="module" src="../js/print.js"></script>
     <script type="module" src="../js/logs.js"></script>
     <script type="module" src="../js/users.js"></script>
     <script type="module" src="../js/home.js"></script>
@@ -409,7 +407,8 @@
     <script src="../js/functions.js"></script>
 
      <!--Import Scripts-->
-
+<!-- Include this in your HTML HEAD or before closing body if not yet included -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="https://unpkg.com/sweetalert2@10"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>

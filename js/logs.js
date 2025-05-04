@@ -40,18 +40,31 @@ function loadHistory() {
 
         for (let historyId in historyData) {
             const history = historyData[historyId];
-            const { courtName, startTimeReadable, userId } = history;
+            const { courtName, startTimeReadable,endTimeReadable,payment, userId } = history;
+
+            const username = ref(database, "/users/" + userId +"/fullName/");
+            get(username).then((snapshot) => {
+                const fullName = snapshot.val();
+            //console.log(fullName);
+ 
+
+
 
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${userId || 'Unknown'}</td>
+                <td>${fullName || 'Unknown'}</td>
                 <td>${courtName || 'Unknown'}</td>
                 <td>${startTimeReadable || 'Unknown'}</td>
+                <td>${endTimeReadable || 'Unknown'}</td>
+                
                 <td>
                     <button class="delete-history-btn" data-id="${historyId}" style="cursor:pointer;">Delete</button>
                 </td>
             `;
             historyTbody.appendChild(row);
+        }).catch(error => {
+            console.error("Omsikm", error);
+        });
         }
 
         document.querySelectorAll('.delete-history-btn').forEach(btn => {
@@ -73,9 +86,9 @@ function loadHistory() {
             });
         });
     });
+
+    
 }
-
-
 
 function loadPayments() {
     const paymentsRef = ref(database, 'payments');
@@ -98,20 +111,33 @@ function loadPayments() {
         const paymentsData = snapshot.val();
 
         for (let paymentId in paymentsData) {
-            const payment = paymentsData[paymentId];
-            const { userId, startTimeReadable, paymentStatus } = payment;
+            const payments = paymentsData[paymentId];
+            const { userId, payment, paymentStatus } = payments;
 
+
+            const username = ref(database, "/users/" + userId +"/fullName/");
+            get(username).then((snapshot) => {
+                const fullName = snapshot.val();
+            //console.log(fullName);
+ 
+            
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${userId || 'Unknown'}</td>
-                <td>${startTimeReadable || 'Unknown'}</td>
+                <td>${fullName || 'Unknown'}</td>
+                
+                <td>₱${payment || 'Unknown'}</td>
                 <td>${paymentStatus || 'Unknown'}</td>
                 <td>
-                    <button class="pay-now-btn" data-id="${paymentId}" style="cursor:pointer;">Pay Now</button>
+                    <button class="pay-now-btn" data-id="${paymentId}" style="cursor:pointer;">Paid</button>
                     <button class="delete-payment-btn" data-id="${paymentId}" style="cursor:pointer;">Delete</button>
                 </td>
             `;
             paymentsTbody.appendChild(row);
+
+
+        }).catch(error => {
+            console.error("Omsikm", error);
+        });
         }
 
         document.querySelectorAll('.pay-now-btn').forEach(btn => {
@@ -154,6 +180,8 @@ function loadPayments() {
         });
     });
 }
+
+
 
 
 // Monitor and move finished reservations

@@ -88,7 +88,7 @@ button.Images-btn{
 
 
 /* General button styles for Edit and Delete */
-button.edit-btn, button.delete-btn, button.view-images-btn,button.verify-btn,button.Images-btn,.delete-history-btn,.delete-payment-btn,.pay-now-btn {
+button.edit-btn,#exportExcelButton, button.delete-btn, button.view-images-btn,button.verify-btn,button.Images-btn,.delete-history-btn,.delete-payment-btn,.pay-now-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -105,13 +105,15 @@ button.edit-btn, button.delete-btn, button.view-images-btn,button.verify-btn,but
 }
 
 /* Edit button */
-button.edit-btn ,.pay-now-btn{
+button.edit-btn ,.pay-now-btn,#exportExcelButton{
     background-color: #2f88ff !important; /* Blue background */
     color: black;
     box-shadow: 0 4px 6px rgba(0, 123, 255, 0.3);
 }
-
-button.edit-btn:hover, button.edit-btn:focus ,.pay-now-btn{
+#exportExcelButton{
+	margin-left: 90%;
+}
+button.edit-btn:hover, button.edit-btn:focus ,.pay-now-btn,#exportExcelButton{
     background-color: #1f64a0;
     box-shadow: 0 6px 8px rgba(0, 123, 255, 0.5);
 }
