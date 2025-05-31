@@ -40,56 +40,46 @@ function loadHistory() {
 
         for (let historyId in historyData) {
             const history = historyData[historyId];
-            const { courtName, startTimeReadable,endTimeReadable,payment, userId } = history;
+            const { courtName, startTimeReadable, endTimeReadable, payment, userId } = history;
 
-            const username = ref(database, "/users/" + userId +"/fullName/");
+            const username = ref(database, "/users/" + userId + "/fullName/");
             get(username).then((snapshot) => {
                 const fullName = snapshot.val();
-            //console.log(fullName);
- 
 
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${fullName || 'Unknown'}</td>
+                    <td>${courtName || 'Unknown'}</td>
+                    <td>${startTimeReadable || 'Unknown'}</td>
+                    <td>${endTimeReadable || 'Unknown'}</td>
+                    <td>
+                        <button class="delete-history-btn" data-id="${historyId}" style="cursor:pointer;">Delete</button>
+                    </td>
+                `;
+                historyTbody.appendChild(row);
 
+                // ✅ Attach delete button listener after adding the row
+                row.querySelector('.delete-history-btn').addEventListener('click', async (e) => {
+                    const confirm = await Swal.fire({
+                        title: 'Delete History?',
+                        text: 'Are you sure you want to delete this history record?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, delete it!',
+                    });
 
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${fullName || 'Unknown'}</td>
-                <td>${courtName || 'Unknown'}</td>
-                <td>${startTimeReadable || 'Unknown'}</td>
-                <td>${endTimeReadable || 'Unknown'}</td>
-                
-                <td>
-                    <button class="delete-history-btn" data-id="${historyId}" style="cursor:pointer;">Delete</button>
-                </td>
-            `;
-            historyTbody.appendChild(row);
-        }).catch(error => {
-            console.error("Omsikm", error);
-        });
-        }
-
-        document.querySelectorAll('.delete-history-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const historyId = e.currentTarget.getAttribute('data-id');
-
-                const confirm = await Swal.fire({
-                    title: 'Delete History?',
-                    text: 'Are you sure you want to delete this history record?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, delete it!',
+                    if (confirm.isConfirmed) {
+                        await remove(ref(database, `history/${historyId}`));
+                        Swal.fire('Deleted!', 'History record deleted.', 'success');
+                    }
                 });
 
-                if (confirm.isConfirmed) {
-                    await remove(ref(database, `history/${historyId}`));
-                    Swal.fire('Deleted!', 'History record deleted.', 'success');
-                }
+            }).catch(error => {
+                console.error("Error loading user data for history:", error);
             });
-        });
+        }
     });
-
-    
 }
-
 function loadPayments() {
     const paymentsRef = ref(database, 'payments');
     const paymentsTbody = document.getElementById('PaymentsDiv');
@@ -114,73 +104,63 @@ function loadPayments() {
             const payments = paymentsData[paymentId];
             const { userId, payment, paymentStatus } = payments;
 
-
-            const username = ref(database, "/users/" + userId +"/fullName/");
+            const username = ref(database, "/users/" + userId + "/fullName/");
             get(username).then((snapshot) => {
                 const fullName = snapshot.val();
-            //console.log(fullName);
- 
-            
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${fullName || 'Unknown'}</td>
-                
-                <td>₱${payment || 'Unknown'}</td>
-                <td>${paymentStatus || 'Unknown'}</td>
-                <td>
-                    <button class="pay-now-btn" data-id="${paymentId}" style="cursor:pointer;">Paid</button>
-                    <button class="delete-payment-btn" data-id="${paymentId}" style="cursor:pointer;">Delete</button>
-                </td>
-            `;
-            paymentsTbody.appendChild(row);
 
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${fullName || 'Unknown'}</td>
+                    <td>₱${payment || 'Unknown'}</td>
+                    <td>${paymentStatus || 'Unknown'}</td>
+                    <td>
+                        ${paymentStatus !== 'paid' ? `<button class="pay-now-btn" data-id="${paymentId}" style="cursor:pointer;">Paid</button>` : ''}
+                        <button class="delete-payment-btn" data-id="${paymentId}" style="cursor:pointer;">Delete</button>
+                    </td>
+                `;
+                paymentsTbody.appendChild(row);
 
-        }).catch(error => {
-            console.error("Omsikm", error);
-        });
+                // ✅ Attach Paid button event if visible
+                if (paymentStatus !== 'paid') {
+                    row.querySelector('.pay-now-btn').addEventListener('click', async (e) => {
+                        const confirm = await Swal.fire({
+                            title: 'Mark as Paid?',
+                            text: 'Do you want to mark this payment as paid?',
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, mark as paid!',
+                        });
+
+                        if (confirm.isConfirmed) {
+                            await update(ref(database, `payments/${paymentId}`), { paymentStatus: 'paid' });
+                            Swal.fire('Success!', 'Payment status updated to Paid.', 'success');
+                        }
+                    });
+                }
+
+                // ✅ Attach Delete button event
+                row.querySelector('.delete-payment-btn').addEventListener('click', async (e) => {
+                    const confirm = await Swal.fire({
+                        title: 'Delete Payment?',
+                        text: 'Are you sure you want to delete this payment record?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, delete it!',
+                    });
+
+                    if (confirm.isConfirmed) {
+                        await remove(ref(database, `payments/${paymentId}`));
+                        Swal.fire('Deleted!', 'Payment record deleted.', 'success');
+                    }
+                });
+
+            }).catch(error => {
+                console.error("Error loading user data for payments:", error);
+            });
         }
-
-        document.querySelectorAll('.pay-now-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const paymentId = e.currentTarget.getAttribute('data-id');
-                const paymentRef = ref(database, `payments/${paymentId}`);
-
-                const confirm = await Swal.fire({
-                    title: 'Mark as Paid?',
-                    text: 'Do you want to mark this payment as paid?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, mark as paid!',
-                });
-
-                if (confirm.isConfirmed) {
-                    await update(paymentRef, { paymentStatus: 'paid' });
-                    Swal.fire('Success!', 'Payment status updated to Paid.', 'success');
-                }
-            });
-        });
-
-        document.querySelectorAll('.delete-payment-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const paymentId = e.currentTarget.getAttribute('data-id');
-
-                const confirm = await Swal.fire({
-                    title: 'Delete Payment?',
-                    text: 'Are you sure you want to delete this payment record?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, delete it!',
-                });
-
-                if (confirm.isConfirmed) {
-                    await remove(ref(database, `payments/${paymentId}`));
-                    Swal.fire('Deleted!', 'Payment record deleted.', 'success');
-                }
-            });
-        });
     });
 }
-
+        
 
 
 
@@ -201,7 +181,7 @@ function monitorReservations() {
                     console.log(`Checking reservation ${resId}:`, resData);
                     console.log(`Now: ${now}, EndTime: ${resData.endTime}, Expired: ${now > resData.endTime}`);
 
-                    if (now => resData.endTime) {
+                    if (now > resData.endTime) {
                         const courtId = resData.courtId;
                         const courtRef = ref(database, `courts/${courtId}`);
                         const historyRef = ref(database, `history/${resId}`);

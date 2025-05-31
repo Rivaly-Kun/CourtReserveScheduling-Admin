@@ -1,7 +1,7 @@
 // admin-bookings.js
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getDatabase, ref, onValue, get, child, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { getDatabase, ref, onValue, get, child,remove, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAGT4ZK8L-bcQzRQ65pVzmsukd9Zx-75uQ",
@@ -24,6 +24,15 @@ const usersRef = ref(db, "users");
 onValue(reservationsRef, async (snapshot) => {
     postDiv.innerHTML = ""; // Clear existing rows
 
+    if (!snapshot.exists()) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td colspan="7" style="text-align: center; padding: 20px;"><em>No bookings available.</em></td>
+        `;
+        postDiv.appendChild(tr);
+        return;
+    }
+    
     const reservations = [];
     snapshot.forEach((childSnapshot) => {
         const resData = childSnapshot.val();
@@ -53,7 +62,8 @@ onValue(reservationsRef, async (snapshot) => {
         
         let actionButtons = `
        
-        <button class="reject" onclick="rejectReservation('${res.reservationId}')">
+   <button class="reject" onclick="rejectReservation('${res.reservationId}', '${res.courtId}')">
+
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 48 48"><g fill="none" stroke-linejoin="round" stroke-width="4"><path fill="#ff2f2f" stroke="#000" d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z"/><path stroke="#fff" stroke-linecap="round" d="M29.6567 18.3432L18.343 29.6569"/><path stroke="#fff" stroke-linecap="round" d="M18.3433 18.3432L29.657 29.6569"/></g></svg> Cancel
         </button>
     `;
@@ -96,22 +106,26 @@ window.acceptReservation = function (reservationId) {
         console.error("Error accepting reservation:", error);
     });
 }
-
 // Global function to reject the reservation
-window.rejectReservation = function (reservationId) {
+window.rejectReservation = function (reservationId, courtId) {
     const reservationRef = ref(db, 'reservations/' + reservationId);
-
-    // Update reservation status to rejected
-    update(reservationRef, {
-        status: "rejected"
+    const courtRef = ref(db, 'courts/' + courtId);
+console.log(courtRef);
+    // First update the court status to available
+    update(courtRef, {
+        status: "Available"
     }).then(() => {
-        alert(`Reservation ${reservationId} rejected!`);
-        // Refresh the data to update the buttons
+        // Then remove the reservation
+        return remove(reservationRef);
+    }).then(() => {
+        alert(`Reservation ${reservationId} rejected and removed. Court is now available.`);
+        // Refresh the data to update the UI
         location.reload();
     }).catch((error) => {
-        console.error("Error rejecting reservation:", error);
+        console.error("Error rejecting reservation and updating court:", error);
     });
-}
+};
+
 
 // Global function to cancel the reservation
 window.cancelReservation = function (reservationId) {
